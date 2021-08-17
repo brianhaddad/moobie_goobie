@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoobieGoobie", "MoobieGoobie\MoobieGoobie.csproj", "{E1D6F711-4CA3-497D-B2A8-FC31219108BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moobie.WebView", "Moobie.WebView\Moobie.WebView.csproj", "{0A9E5840-90E1-4480-8A70-382F95FAA773}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E1D6F711-4CA3-497D-B2A8-FC31219108BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D6F711-4CA3-497D-B2A8-FC31219108BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1D6F711-4CA3-497D-B2A8-FC31219108BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1D6F711-4CA3-497D-B2A8-FC31219108BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A9E5840-90E1-4480-8A70-382F95FAA773}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A9E5840-90E1-4480-8A70-382F95FAA773}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A9E5840-90E1-4480-8A70-382F95FAA773}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A9E5840-90E1-4480-8A70-382F95FAA773}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C5738BF9-0F26-4F45-BB09-4B3F0E8D8492}
+	EndGlobalSection
+EndGlobal

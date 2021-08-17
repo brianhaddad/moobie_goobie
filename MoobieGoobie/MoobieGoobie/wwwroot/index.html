@@ -1,0 +1,141 @@
+<html>
+<head>
+<title>Loading</title>
+</head>
+<body>
+<script>
+    (async function () {
+        const PAGE_TITLE_KEY = 'pageTitle';
+        const TEMPLATE_KEY = 'template';
+        const DATA_KEY = 'data';
+        const DATA_INDICATOR = 'data.';
+        const ELEMENT_TAG_KEY = 'type';
+        const ATTRIBUTES_KEY = 'attributes';
+        const INNER_HTML_KEY = 'innerHTML';
+        const CHILDREN_KEY = 'children';
+        const CHILD_TEMPLATE_KEY = 'childTemplate';
+        const CHILDREN_DATA_KEY = 'childrenDataSource';
+        const PATH_SPLIT = '.';
+
+        const submitOverride = (event) => {
+            const data = buildFormData(event.target.children);
+            //TODO: fetch to process, based on calling form
+            console.log(event.target.id);
+            console.log(JSON.stringify(data));
+            event.preventDefault();
+            return false;
+        };
+
+        function buildFormData(children, data) {
+            if (!data) {
+                data = {};
+            }
+            for (const elem of children) {
+                if (elem.name) {
+                    if (elem.type && elem.type === 'radio') {
+                        if (!data.hasOwnProperty(elem.name)) {
+                            data[elem.name] = '';
+                        }
+                        if (elem.checked) {
+                            data[elem.name] = elem.value;
+                        }
+                    }
+                    else if (elem.type && elem.type === 'checkbox') {
+                        if (!data.hasOwnProperty(elem.name)) {
+                            data[elem.name] = [];
+                        }
+                        if (elem.checked) {
+                            data[elem.name].push(elem.value);
+                        }
+                    }
+                    else {
+                        // Everything else works fine this way:
+                        data[elem.name] = elem.value;
+                    }
+                }
+                else if (elem.children.length > 0) {
+                    // This is for scanning non-form elements such as divs.
+                    data = buildFormData(elem.children, data);
+                }
+            }
+            return data;
+        }
+
+        function createElement(type, attributes, innerHTML, data) {
+            const element = document.createElement(type);
+            for (const a in attributes) {
+                element.setAttribute(a, getValue(attributes, a, data));
+            }
+            if (type === 'form' && attributes.hasOwnProperty('id')) {
+                element.onsubmit = submitOverride;
+            }
+            if (innerHTML) {
+                element.innerHTML = innerHTML;
+            }
+            return element;
+        }
+
+        function getValue(obj, property, data) {
+            let initialValue = crawlGetValue(obj, [property]);
+            if (data && initialValue && typeof initialValue === 'string' && initialValue.indexOf(DATA_INDICATOR) === 0) {
+                initialValue = crawlGetValue(data, initialValue.substr(DATA_INDICATOR.length).split(PATH_SPLIT));
+            }
+            return initialValue;
+        }
+
+        function build(template, data) {
+            const type = getValue(template, ELEMENT_TAG_KEY, data);
+            const attributes = getValue(template, ATTRIBUTES_KEY);
+            const innerHTML = getValue(template, INNER_HTML_KEY, data);
+            const element = createElement(type, attributes, innerHTML, data);
+            const children = getValue(template, CHILDREN_KEY, data);
+            const childrenData = getValue(template, CHILDREN_DATA_KEY, data);
+            if (childrenData && template.hasOwnProperty(CHILD_TEMPLATE_KEY)) {
+                for (const child of childrenData) {
+                    element.appendChild(build(template[CHILD_TEMPLATE_KEY], child));
+                }
+            }
+            else if (children && children.length > 0) {
+                for (const child of children) {
+                    element.appendChild(build(child, data));
+                }
+            }
+            return element;
+        }
+
+        //TODO: maybe include an update function similar to build so that things can be selectively changed instead of doing a full rebuild?
+        //Could crawl through existing HTML DOM structure, compare with template, and update new data that came in.
+
+        function crawlGetValue(data, props) {
+            if (props.length === 0) {
+                return data;
+            }
+            var prop = props.shift();
+            if (data.hasOwnProperty(prop)) {
+                return crawlGetValue(data[prop], props);
+            }
+            return null;
+        }
+
+        //TODO: make a more generic thing for API calls (post and get will use)
+        async function get(form, data, options) {
+            const response = await fetch('/routes' + form ?? '');
+            const result = await response.json();
+            return result;
+        }
+
+        const result = await get('');
+        console.log(result);
+        
+        const title = crawlGetValue(result, [PAGE_TITLE_KEY]);
+        if (title) {
+            document.title = title;
+        }
+        const template = crawlGetValue(result, [TEMPLATE_KEY]);
+        const data = crawlGetValue(result, [DATA_KEY]);
+
+        document.body.appendChild(build(template, data));
+    }());
+</script>
+</body>
+</html>
