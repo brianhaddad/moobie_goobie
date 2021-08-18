@@ -17,12 +17,18 @@
         const CHILDREN_DATA_KEY = 'childrenDataSource';
         const PATH_SPLIT = '.';
 
-        const submitOverride = (event) => {
+        const submitOverride = async (event) => {
+            event.preventDefault();
             const data = buildFormData(event.target.children);
             //TODO: fetch to process, based on calling form
             console.log(event.target.id);
             console.log(JSON.stringify(data));
-            event.preventDefault();
+            var result = await get(event.target.id, data);
+            //TODO: how to universally handle update after fetch?
+            //maybe returning data is used just to update current form,
+            //but forms register to listen for updates to other forms,
+            //and when this one is done updating it notifies the subscribed
+            //forms that they should update too?
             return false;
         };
 
@@ -117,11 +123,38 @@
             return null;
         }
 
-        //TODO: make a more generic thing for API calls (post and get will use)
         async function get(form, data, options) {
-            const response = await fetch('/routes' + form ?? '');
-            const result = await response.json();
-            return result;
+            if (form && form.length > 1 && form.substr(0, 1) !== '/') {
+                form = '/' + form;
+            }
+            if (!options) {
+                options = {};
+            }
+            const init = { 'method': 'POST' };
+            Object.assign(init, options);
+            if (data) {
+                const headers = { 'Content-Type': 'application/json' };
+                init['body'] = JSON.stringify(data);
+                if (init['headers']) {
+                    Object.assign(init['headers'], headers);
+                }
+                else {
+                    init['headers'] = headers;
+                }
+            }
+            const response = await fetch('/routes' + form ?? '', init);
+            if (!response.ok) {
+                return response;
+            }
+            else {
+                try {
+                    const result = await response.json();
+                    return result;
+                }
+                catch (e) {
+                    return e;
+                }
+            }
         }
 
         const result = await get('');

@@ -6,7 +6,12 @@ namespace Moobie.WebView.Extensions
 {
     public static class TemplateNodeExtensions
     {
-        public static TemplateNode AddTemplate<T>(this PagePayload<T> payload, string type, Dictionary<string, string> attributes = null, string innerHTML = null, Action<TemplateNode> config = null)
+        public static TemplateNode AddTemplate<T>(
+            this PagePayload<T> payload,
+            string type,
+            Dictionary<string, string> attributes = null,
+            string innerHTML = null,
+            Action<TemplateNode> config = null) where T : class
         {
             payload.Template = new TemplateNode
             {
@@ -23,7 +28,11 @@ namespace Moobie.WebView.Extensions
             return payload.Template;
         }
 
-        public static TemplateNode AddChild(this TemplateNode templateNode, string type, Dictionary<string, string> attributes = null, string innerHTML = null, Action<TemplateNode> childConfig = null)
+        public static TemplateNode AddChild(
+            this TemplateNode templateNode,
+            string type, Dictionary<string, string> attributes = null,
+            string innerHTML = null,
+            Action<TemplateNode> childConfig = null)
         {
             if (templateNode.Children is null)
             {
