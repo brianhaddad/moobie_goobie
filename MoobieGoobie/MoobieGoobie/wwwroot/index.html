@@ -17,13 +17,9 @@
         const CHILDREN_DATA_KEY = 'childrenDataSource';
         const PATH_SPLIT = '.';
 
-        const submitOverride = async (event) => {
+        const userSubmitOverride = async (event) => {
             event.preventDefault();
-            const data = buildFormData(event.target.children);
-            //TODO: fetch to process, based on calling form
-            console.log(event.target.id);
-            console.log(JSON.stringify(data));
-            var result = await get(event.target.id, data);
+            await updateForm(event.target);
             //TODO: how to universally handle update after fetch?
             //maybe returning data is used just to update current form,
             //but forms register to listen for updates to other forms,
@@ -31,6 +27,18 @@
             //forms that they should update too?
             return false;
         };
+
+        async function updateForm(targetForm) {
+            const data = buildFormData(targetForm.children);
+            console.log(targetForm.id);
+            console.log(JSON.stringify(data));
+            var result = await get(targetForm.id, data);
+            const element = processResult(result);
+            console.log(element);
+            //TODO: process the result for targetForm, updating things as required
+            //crawl over the elements as built vs as exists? or just straight up replace stuff?
+            //if replacing, maybe attempt to get and restore the focus and form data?
+        }
 
         function buildFormData(children, data) {
             if (!data) {
@@ -73,7 +81,7 @@
                 element.setAttribute(a, getValue(attributes, a, data));
             }
             if (type === 'form' && attributes.hasOwnProperty('id')) {
-                element.onsubmit = submitOverride;
+                element.onsubmit = userSubmitOverride;
             }
             if (innerHTML) {
                 element.innerHTML = innerHTML;
@@ -117,7 +125,7 @@
                 return data;
             }
             var prop = props.shift();
-            if (data.hasOwnProperty(prop)) {
+            if (data?.hasOwnProperty(prop)) {
                 return crawlGetValue(data[prop], props);
             }
             return null;
@@ -157,17 +165,23 @@
             }
         }
 
-        const result = await get('');
-        console.log(result);
-        
-        const title = crawlGetValue(result, [PAGE_TITLE_KEY]);
-        if (title) {
-            document.title = title;
-        }
-        const template = crawlGetValue(result, [TEMPLATE_KEY]);
-        const data = crawlGetValue(result, [DATA_KEY]);
+        function processResult(result) {
+            console.log(result);
 
-        document.body.appendChild(build(template, data));
+            const title = crawlGetValue(result, [PAGE_TITLE_KEY]);
+            if (title) {
+                document.title = title;
+            }
+            const template = crawlGetValue(result, [TEMPLATE_KEY]);
+            const data = crawlGetValue(result, [DATA_KEY]);
+            if (template) {
+                return build(template, data);
+            }
+            return null;
+        }
+
+        const result = await get('');
+        document.body.appendChild(processResult(result));
     }());
 </script>
 </body>
