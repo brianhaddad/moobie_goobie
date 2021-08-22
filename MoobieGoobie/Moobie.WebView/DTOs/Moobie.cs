@@ -4,6 +4,8 @@
     {
         public string Alphabetize { get; set; }
         public string Title { get; set; }
+        public string ExternalDataSource { get; set; }
+        public string ExternalDataSourceId { get; set; }
         public int RuntimeMinutes { get; set; }
         public string Rating { get; set; }
         public bool Favorite { get; set; }
