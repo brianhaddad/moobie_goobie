@@ -28,7 +28,7 @@ namespace MoobieGoobie.Controllers
         [Route("/routes/{view}")]
         public PagePayload<object> Others([FromRoute] string view, [FromBody] Dictionary<string, object> data)
         {
-            //TODO: Really think long and hard about this junk. lol
+            //TODO: Really think long and hard about this junk.
             var result = ViewFactory.GetView<object>(view);
             return result;
         }
