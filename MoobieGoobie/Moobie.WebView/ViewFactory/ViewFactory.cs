@@ -1,6 +1,7 @@
 ﻿using Moobie.WebView.TemplateModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Moobie.WebView.ViewFactory
 {
@@ -14,15 +15,7 @@ namespace Moobie.WebView.ViewFactory
         }
 
         public PagePayload<T> GetView<T>(string viewName) where T : class
-        {
-            foreach (var builder in ViewBuilders)
-            {
-                if (builder.Name == viewName)
-                {
-                    return builder.BuildView<T>();
-                }
-            }
-            throw new NotImplementedException($"No implementation found for {viewName}.");
-        }
+            => ViewBuilders.FirstOrDefault(x => x.Name == viewName)?.BuildView<T>()
+                ?? throw new NotImplementedException($"No implementation found for {viewName}.");
     }
 }
